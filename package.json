@@ -1,0 +1,33 @@
+{
+    "name": "logbucket",
+    "author": "DJj123dj",
+    "version": "1.0.0",
+    "description": "A small package to create awesome and beautiful logs in the node.js console with colors, prefixes and the ability to be saved in a debug file.",
+    "main": "dist/index.js",
+    "module": "dist/index.js",
+    "directories": {
+        "test": "test"
+    },
+    "scripts": {
+        "build": "node ./tools/cleanup.js && tsc -p ./tsconfig.json",
+        "test": "node ./test/example.js"
+    },
+    "keywords": [
+        "color",
+        "console",
+        "ansis",
+        "simple",
+        "logs",
+        "log",
+        "debug",
+        "rgb",
+        "chalk",
+        "logger",
+        "logging"
+    ],
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/DJj123dj/logbucket.git"
+    }
+}
