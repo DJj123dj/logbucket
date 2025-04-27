@@ -16,11 +16,15 @@ npm i logbucket
 
 ## 📌 Features
 - ⚖️ lightweight
+- 🔧 100% typescript autocomplete
 - ⭐️ create beautiful logs
 - ⚙️ advanced customisability
 - 📄 support for custom log types
 - 🎨 full RGB color support using `ansis`
 - 📝 save all logs to a file in real-time
+
+<img src="https://apis.dj-dj.be/cdn/logbucket/example.png" width="300px">
+<img src="https://apis.dj-dj.be/cdn/logbucket/example-params.png" width="700px">
 
 ## 📸 Usage
 TODO
