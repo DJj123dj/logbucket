@@ -2,10 +2,14 @@ import nodepath from "path"
 import fs from "fs"
 import ansis, {Ansis} from "ansis"
 
+/**All available default colors. */
 export type LBDefaultColor = "white"|"red"|"orange"|"yellow"|"green"|"blue"|"gray"|"cyan"|"magenta"|"purple"|"pink"
+/**A type-checker for hex-colors. */
 export type LBHexColor = `#${string}`
+/**All available default log types. */
 export type LBDefaultType = "info"|"warning"|"error"|"system"|"database"|"debug"|"plugin"|"api"|"client"|"server"
 
+/**A parameter to use in a message. */
 export interface LBMessageParam {
     /**The key of this parameter. */
     key:string,
@@ -140,18 +144,32 @@ export class LBErrorTemplate {
     }
 }
 
-interface LBDebugFileMetadata {
+/**All settings for the debug metadata. */
+export interface LBDebugFileMetadata {
+    /**Enable/disable metadata. */
     enabled:boolean,
+    /**Set the title of the metadata. */
     title:string,
+    /**Show the date and time the process was started. */
     showLastStartup:boolean,
+    /**Show the node.js version used. */
     showNodeVersion:boolean,
-    properties:{key:string,value:string}[]
+    /**Add additional properties to show in the metadata (e.g. project version). */
+    properties:{
+        /**The key/name of the property. */
+        key:string,
+        /**The value/description of the property. */
+        value:string
+    }[]
 }
 
 /**The manager responsible for logging all errors and logs to a debug file. */
 export class LBDebugFile {
+    /**The relative location to the debug file from `process.cwd()` */
     path: string
+    /**The maximum lines of the debug file. It will automatically scroll and remove the oldest logs when exceeding the limit. */
     maxHistoryLength: number
+    /**All settings for the debug metadata. */
     metadata: LBDebugFileMetadata
     
     constructor(path:string,maxHistoryLength?:number,metadata?:LBDebugFileMetadata){
@@ -216,9 +234,11 @@ export class LBDebugFile {
             fs.writeFileSync(this.path,this.#createMetadata().join("\n")+text)
         }
     }
+    /**Write the startup header to the debug file (and initialize it). */
     #writeStartup(){
         this.#writeDebugFile("\n---------------------------------------------------------\n-------------------------STARTUP-------------------------\n")
     }
+    /**Append new text to the debug file. Can also be used manually. */
     writeText(text:string){
         this.#writeDebugFile(text)
     }
@@ -241,10 +261,11 @@ export function LogBucket<CustomTemplates extends Record<string,LBMessageTemplat
     const instanceTemplates = Object.assign(defaultTemplates,(templates ?? {}))
     const instanceErrTemplate: LBErrorTemplate = errTemplate ? errTemplate : new LBErrorTemplate("red","red")
 
-    function LogBucketInstance(type:keyof CustomTemplates,message:string,params?:LBMessageParam[])
-    function LogBucketInstance(type:DefaultTemplatesDisabled extends false ? LBDefaultType : never,message:string,params?:LBMessageParam[])
-    function LogBucketInstance(err:Error)
-    function LogBucketInstance(type:string|Error|keyof CustomTemplates,message?:string,params?:LBMessageParam[]){
+    /**Log a message or `Error` to the console and debug file using a colored prefix template and nice styling. */
+    function LogBucketInstance(type:keyof CustomTemplates,message:string,params?:LBMessageParam[]): void
+    function LogBucketInstance(type:DefaultTemplatesDisabled extends false ? LBDefaultType : never,message:string,params?:LBMessageParam[]): void
+    function LogBucketInstance(err:Error): void
+    function LogBucketInstance(type:string|Error|keyof CustomTemplates,message?:string,params?:LBMessageParam[]): void {
         if (typeof type == "string" && message){
             //render string
             let template = LogBucketInstance._templates[type]
@@ -267,10 +288,15 @@ export function LogBucket<CustomTemplates extends Record<string,LBMessageTemplat
             throw new Error("LogBucketInstance() => Invalid syntax! Correct syntax: (type, message, params?) OR (error)")
         }
     }
+    /****❌ Please do not modify.** Instance of the LogBucket system. */
     LogBucketInstance._templates = instanceTemplates
+    /****❌ Please do not modify.** Instance of the LogBucket system. */
     LogBucketInstance._errTemplate = instanceErrTemplate
+    /****❌ Please do not modify.** Instance of the LogBucket system. */
     LogBucketInstance._debugFile = debugFile ?? null
+    /****❌ Please do not modify.** Instance of the LogBucket system. */
     LogBucketInstance._msgListeners = [] as ((template:LBMessageTemplate,message:string,params:LBMessageParam[]) => void)[]
+    /****❌ Please do not modify.** Instance of the LogBucket system. */
     LogBucketInstance._errListeners = [] as ((template:LBErrorTemplate,err:Error) => void)[]
 
     //event handling
@@ -281,6 +307,7 @@ export function LogBucket<CustomTemplates extends Record<string,LBMessageTemplat
         else if (event == "errorLog") LogBucketInstance._errListeners.push(callback as any)
         else throw new Error("LogBucketInstance.on(event,callback) => Invalid event type! Choose between 'msgLog' and 'errorLog'")
     }
+    /**Listen for an event and define a custom behaviour. (e.g. `msgLog` or `errorLog`) */
     LogBucketInstance.on = on
 
     return LogBucketInstance
