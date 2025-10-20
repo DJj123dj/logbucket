@@ -1,7 +1,7 @@
 {
     "name": "logbucket",
     "author": "DJj123dj",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "A small package to create awesome and beautiful logs in the node.js console with colors, prefixes and the ability to be saved in a debug file.",
     "main": "dist/index.js",
     "module": "dist/index.js",

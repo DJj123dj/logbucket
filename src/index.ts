@@ -18,6 +18,8 @@ export interface LBMessageParam {
     /**When enabled, this parameter will only be shown in the debug file. */
     hidden?:boolean
 }
+/**A list of params to use in a message. */
+export type LBMessageParamsRecord = Record<string,string>
 
 /**Get the ansis function for the specified color. */
 function getAnsisColor(color:LBDefaultColor|LBHexColor): Ansis {
@@ -60,15 +62,18 @@ export class LBMessageTemplate {
     }
 
     /**Renders a message using the configured template. Returns `true` on success. */
-    render(message:string,params:LBMessageParam[]=[]){
+    render(message:string,params:LBMessageParam[]|LBMessageParamsRecord=[]){
         const prefixColor = getAnsisColor(this.prefixColor)
         const msgColor = getAnsisColor(this.msgColor)
         const paramsColor = getAnsisColor(this.paramsColor)
         
         try{
             const pstrings: string[] = []
-            params.forEach((p) => {
+            if (Array.isArray(params)) params.forEach((p) => {
                 if (!p.hidden) pstrings.push(p.key+": "+p.value)
+            })
+            else Object.entries(params).forEach(([key,value]) => {
+                pstrings.push(key+": "+value)
             })
             const prefix = prefixColor("["+this.prefix+"] ")
             const parameters = (pstrings.length > 0) ? paramsColor("  ("+pstrings.join(", ")+")") : ""
@@ -81,13 +86,16 @@ export class LBMessageTemplate {
         }
     }
     /**Returns a message formatted to be added to the debug file using the configured template. */
-    renderDebug(message:string,params:LBMessageParam[]=[]){
+    renderDebug(message:string,params:LBMessageParam[]|LBMessageParamsRecord=[]){
         const date = new Date()
         const dstring = `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
 
         const pstrings: string[] = []
-        params.forEach((p) => {
+        if (Array.isArray(params)) params.forEach((p) => {
             pstrings.push(p.key+": "+p.value)
+        })
+        else Object.entries(params).forEach(([key,value]) => {
+            pstrings.push(key+": "+value)
         })
         const prefix = "["+dstring+" "+this.prefix+"] "
         const parameters = (pstrings.length > 0) ? "  ("+pstrings.join(", ")+")" : ""
@@ -169,11 +177,12 @@ export class LBDebugFile {
     path: string
     /**The maximum lines of the debug file. It will automatically scroll and remove the oldest logs when exceeding the limit. */
     maxHistoryLength: number
-    /**All settings for the debug metadata. */
+    /**All settings for the debug metadata. The default metadata will be used when left empty. */
     metadata: LBDebugFileMetadata
     
     constructor(path:string,maxHistoryLength?:number,metadata?:LBDebugFileMetadata){
-        this.path = nodepath.join(process.cwd(),path)
+        this.path = path.startsWith("/") ? path : nodepath.join(process.cwd(),path)
+        if (!fs.existsSync(nodepath.dirname(this.path))) fs.mkdirSync(nodepath.dirname(this.path),{recursive:true})
         this.maxHistoryLength = maxHistoryLength ?? 5000
         this.metadata = metadata ?? {
             enabled:true,
@@ -262,10 +271,10 @@ export function LogBucket<CustomTemplates extends Record<string,LBMessageTemplat
     const instanceErrTemplate: LBErrorTemplate = errTemplate ? errTemplate : new LBErrorTemplate("red","red")
 
     /**Log a message or `Error` to the console and debug file using a colored prefix template and nice styling. */
-    function LogBucketInstance(type:keyof CustomTemplates,message:string,params?:LBMessageParam[]): void
-    function LogBucketInstance(type:DefaultTemplatesDisabled extends false ? LBDefaultType : never,message:string,params?:LBMessageParam[]): void
+    function LogBucketInstance(type:keyof CustomTemplates,message:string,params?:LBMessageParam[]|LBMessageParamsRecord): void
+    function LogBucketInstance(type:DefaultTemplatesDisabled extends false ? LBDefaultType : never,message:string,params?:LBMessageParam[]|LBMessageParamsRecord): void
     function LogBucketInstance(err:Error): void
-    function LogBucketInstance(type:string|Error|keyof CustomTemplates,message?:string,params?:LBMessageParam[]): void {
+    function LogBucketInstance(type:string|Error|keyof CustomTemplates,message?:string,params?:LBMessageParam[]|LBMessageParamsRecord): void {
         if (typeof type == "string" && message){
             //render string
             let template = LogBucketInstance._templates[type]
@@ -295,12 +304,12 @@ export function LogBucket<CustomTemplates extends Record<string,LBMessageTemplat
     /****❌ Please do not modify.** Instance of the LogBucket system. */
     LogBucketInstance._debugFile = debugFile ?? null
     /****❌ Please do not modify.** Instance of the LogBucket system. */
-    LogBucketInstance._msgListeners = [] as ((template:LBMessageTemplate,message:string,params:LBMessageParam[]) => void)[]
+    LogBucketInstance._msgListeners = [] as ((template:LBMessageTemplate,message:string,params:LBMessageParam[]|LBMessageParamsRecord) => void)[]
     /****❌ Please do not modify.** Instance of the LogBucket system. */
     LogBucketInstance._errListeners = [] as ((template:LBErrorTemplate,err:Error) => void)[]
 
     //event handling
-    function on(event:"msgLog",callback:(template:LBMessageTemplate,message:string,params:LBMessageParam[]) => void): void
+    function on(event:"msgLog",callback:(template:LBMessageTemplate,message:string,params:LBMessageParam[]|LBMessageParamsRecord) => void): void
     function on(event:"errorLog",callback:(template:LBErrorTemplate,err:Error) => void): void
     function on(event:string,callback:Function): void {
         if (event == "msgLog") LogBucketInstance._msgListeners.push(callback as any)
@@ -311,4 +320,11 @@ export function LogBucket<CustomTemplates extends Record<string,LBMessageTemplat
     LogBucketInstance.on = on
 
     return LogBucketInstance
+}
+
+export default {
+    LogBucket,
+    LBDebugFile,
+    LBMessageTemplate,
+    LBErrorTemplate
 }

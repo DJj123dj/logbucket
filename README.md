@@ -1,6 +1,6 @@
 <img src="https://apis.dj-dj.be/cdn/logbucket/logo.png" alt="Logbucket Logo" width="600px">
 
-[![discord](https://img.shields.io/badge/discord-join%20our%20server-5865F2.svg?style=flat-square&logo=discord)](https://discord.com/invite/26vT9wt3n3)  [![version](https://img.shields.io/badge/version-1.0.0-brightgreen.svg?style=flat-square)](https://github.com/DJj123dj/logbucket/releases/tag/v1.0.0)  [![license](https://img.shields.io/badge/license-MIT-important.svg?style=flat-square)](https://github.com/DJj123dj/logbucket/blob/main/LICENSE) [![stars](https://img.shields.io/github/stars/DJj123dj/logbucket?color=yellow&label=stars&logo=github&style=flat-square)](https://www.github.com/DJj123dj/logbucket)
+[![discord](https://img.shields.io/badge/discord-join%20our%20server-5865F2.svg?style=flat-square&logo=discord)](https://discord.com/invite/26vT9wt3n3)  [![version](https://img.shields.io/badge/version-1.1.0-brightgreen.svg?style=flat-square)](https://github.com/DJj123dj/logbucket/releases/tag/v1.1.0)  [![license](https://img.shields.io/badge/license-MIT-important.svg?style=flat-square)](https://github.com/DJj123dj/logbucket/blob/main/LICENSE) [![stars](https://img.shields.io/github/stars/DJj123dj/logbucket?color=yellow&label=stars&logo=github&style=flat-square)](https://www.github.com/DJj123dj/logbucket)
 
 ### Logbucket
 Logbucket is a lightweight and customizable logging library for Node.js featuring **beautiful logs with configurable colors, prefixes and the ability to be saved to a debug file in real-time.** If you're having trouble configuring the library, feel free to join our support server and we will help you further! 
@@ -172,5 +172,5 @@ All settings for the debug file metadata.
 ---
 <img src="https://apis.dj-dj.be/cdn/logbucket/logo.png" alt="Open Ticket Logo" width="170px">
 
-**v1.0.0 - README.md**<br>
+**v1.1.0 - README.md**<br>
 © 2025 - [DJdj Development](https://www.dj-dj.be) - [Discord](https://discord.dj-dj.be) - [Terms](https://www.dj-dj.be/terms) - [Privacy Policy](https://www.dj-dj.be/privacy) - [Support Us](https://github.com/sponsors/DJj123dj) - [License](./LICENSE.md)

@@ -1,12 +1,13 @@
 //@ts-check
-const {LogBucket} = require("../dist/index")
+const LogBucket = require("../dist/index")
+
 
 ///////////////////////
 //// CONFIGURATION ////
 ///////////////////////
 
 //create the logbucket instance
-const log = LogBucket()
+const log = LogBucket.LogBucket()
 
 ///////////////////////
 ////     USAGE     ////
@@ -27,15 +28,23 @@ log("plugin","Hello world!")
 log("server","Hello world!")
 log("debug","Hello world!")
 
-//log something to the console with parameters
+//log something to the console with array parameters
 log("debug","Testing parameters:",[
     {key:"lorem",value:"ipsum"},
     {key:"foo",value:"bar"}
 ])
 
+//log something to the console with object parameters
+log("debug","Testing object-based parameters:",{
+    lorem:"ipsum",
+    foo:"bar",
+    test:"it works!"
+})
+
 //log something to the console with a hidden parameter
 log("debug","Testing parameters:",[
     {key:"lorem",value:"ipsum",hidden:true},
+    {key:"info",value:"you will only see this parameter",hidden:false},
 ])
 
 //INFO: A hidden parameter will only be logged to the debug file. The debug file is disabled by default. (more info in complexExample.js)
